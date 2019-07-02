@@ -63,15 +63,18 @@ TEST(RTKReplayPlannerTest, ComputeTrajectory) {
   const auto& trajectory = info.trajectory();
   EXPECT_TRUE(status.ok());
   EXPECT_TRUE(!trajectory.trajectory_points().empty());
+  
+  //800个点。不够时用最后一个点填充
+  
   EXPECT_EQ(trajectory.trajectory_points().size(),
             FLAGS_rtk_trajectory_forward);
 
   auto first_point = trajectory.trajectory_points().begin();
-  EXPECT_DOUBLE_EQ(first_point->path_point().x(), 586385.782841);
+  EXPECT_DOUBLE_EQ(first_point->path_point().x(), 586385.782841); //第一个匹配点，.csv第20个
   EXPECT_DOUBLE_EQ(first_point->path_point().y(), 4140674.76065);
 
   auto last_point = trajectory.trajectory_points().rbegin();
-  EXPECT_DOUBLE_EQ(last_point->path_point().x(), 586355.063786);
+  EXPECT_DOUBLE_EQ(last_point->path_point().x(), 586355.063786);  //最后一个匹配点，.csv第819个
   EXPECT_DOUBLE_EQ(last_point->path_point().y(), 4140681.98605);
 }
 
@@ -81,7 +84,7 @@ TEST(RTKReplayPlannerTest, ErrorTest) {
   FLAGS_enable_map_reference_unify = false;
   RTKReplayPlanner planner;
   FLAGS_rtk_trajectory_filename = "modules/planning/testdata/garage_error.csv";
-  RTKReplayPlanner planner_with_error_csv;
+  RTKReplayPlanner planner_with_error_csv;  //file不完整，只有1行数据时，直接返回false
   TrajectoryPoint start_point;
   start_point.mutable_path_point()->set_x(586385.782842);
   start_point.mutable_path_point()->set_y(4140674.76063);
